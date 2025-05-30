@@ -1,0 +1,187 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(uuid())
+  name          String?
+  phone         String        @unique
+  email         String?        @unique
+  role          Role           @default(USER)
+  addresses     Address[]
+  cartItems     Cart[]
+  wishlist      Wishlist[]
+  prescriptions Prescription[]
+  orders        Order[]
+  myMedicines   MyMedicine[]
+  createdAt     DateTime       @default(now())
+}
+
+model Otp {
+  id        String   @id @default(uuid())
+  phone     String?
+  email     String?
+  name      String?
+  code      String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+}
+
+model Address {
+  id      String      @id @default(uuid())
+  user    User        @relation(fields: [userId], references: [id])
+  userId  String
+  type    AddressType
+  street  String
+  city    String
+  state   String
+  zipCode String
+  country String
+
+  shippingOrders Order[] @relation("ShippingAddress")
+  billingOrders  Order[] @relation("BillingAddress")
+}
+
+model Category {
+  id            String        @id @default(uuid())
+  name          String
+  subcategories Subcategory[]
+}
+
+model Subcategory {
+  id         String     @id @default(uuid())
+  name       String
+  category   Category   @relation(fields: [categoryId], references: [id])
+  categoryId String
+  medicines  Medicine[]
+}
+
+model Brand {
+  id        String     @id @default(uuid())
+  name      String
+  medicines Medicine[]
+}
+
+model Medicine {
+  id            String              @id @default(uuid())
+  name          String
+  description   String
+  brand         Brand               @relation(fields: [brandId], references: [id])
+  brandId       String
+  subcategory   Subcategory         @relation(fields: [subcategoryId], references: [id])
+  subcategoryId String
+  thumbnail     String // Cloudinary URL
+  images        String[] // Multiple Cloudinary URLs
+  isTopProduct  Boolean             @default(false)
+  isPopular     Boolean             @default(false)
+  attributes    MedicineAttribute[]
+}
+
+model MedicineAttribute {
+  id         String   @id @default(uuid())
+  medicine   Medicine @relation(fields: [medicineId], references: [id])
+  medicineId String
+  size       String
+  price      Float
+  discount   Float
+  stock      Int
+
+  cartItems     Cart[]
+  wishlistItems Wishlist[]
+  myMedicines   MyMedicine[]
+  orderItems    OrderItem[]
+}
+
+model Cart {
+  id           String            @id @default(uuid())
+  user         User              @relation(fields: [userId], references: [id])
+  userId       String
+  medicineAttr MedicineAttribute @relation(fields: [attrId], references: [id])
+  attrId       String
+  quantity     Int
+}
+
+model Wishlist {
+  id           String            @id @default(uuid())
+  user         User              @relation(fields: [userId], references: [id])
+  userId       String
+  medicineAttr MedicineAttribute @relation(fields: [attrId], references: [id])
+  attrId       String
+}
+
+model Prescription {
+  id                String             @id @default(uuid())
+  user              User               @relation(fields: [userId], references: [id])
+  userId            String
+  fileUrl           String // Cloudinary file URL
+  status            PrescriptionStatus @default(PENDING)
+  approvedMedicines MyMedicine[]
+}
+
+model MyMedicine {
+  id             String            @id @default(uuid())
+  prescription   Prescription      @relation(fields: [prescriptionId], references: [id])
+  prescriptionId String
+  medicineAttr   MedicineAttribute @relation(fields: [attrId], references: [id])
+  attrId         String
+  user           User              @relation(fields: [userId], references: [id])
+  userId         String
+}
+
+model Order {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  shippingAddress   Address @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  shippingAddressId String
+
+  billingAddress   Address @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  billingAddressId String
+
+  items      OrderItem[]
+  status     OrderStatus @default(PENDING)
+  invoiceUrl String? // Cloudinary PDF link or local
+
+  createdAt DateTime @default(now())
+}
+
+model OrderItem {
+  id           String            @id @default(uuid())
+  order        Order             @relation(fields: [orderId], references: [id])
+  orderId      String
+  medicineAttr MedicineAttribute @relation(fields: [attrId], references: [id])
+  attrId       String
+  quantity     Int
+  price        Float
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AddressType {
+  SHIPPING
+  BILLING
+}
+
+enum PrescriptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+}
