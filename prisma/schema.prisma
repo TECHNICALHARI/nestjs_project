@@ -11,7 +11,7 @@ datasource db {
 model User {
   id            String         @id @default(uuid())
   name          String?
-  phone         String        @unique
+  phone         String         @unique
   email         String?        @unique
   role          Role           @default(USER)
   addresses     Address[]
@@ -51,8 +51,9 @@ model Address {
 
 model Category {
   id            String        @id @default(uuid())
-  name          String
+  name          String        @unique
   subcategories Subcategory[]
+  Medicine      Medicine[]
 }
 
 model Subcategory {
@@ -75,24 +76,25 @@ model Medicine {
   description   String
   brand         Brand               @relation(fields: [brandId], references: [id])
   brandId       String
+  category      Category            @relation(fields: [categoryId], references: [id])
+  categoryId    String
   subcategory   Subcategory         @relation(fields: [subcategoryId], references: [id])
   subcategoryId String
-  thumbnail     String // Cloudinary URL
-  images        String[] // Multiple Cloudinary URLs
+  thumbnail     String
+  images        String[]
   isTopProduct  Boolean             @default(false)
   isPopular     Boolean             @default(false)
   attributes    MedicineAttribute[]
 }
 
 model MedicineAttribute {
-  id         String   @id @default(uuid())
-  medicine   Medicine @relation(fields: [medicineId], references: [id])
-  medicineId String
-  size       String
-  price      Float
-  discount   Float
-  stock      Int
-
+  id            String       @id @default(uuid())
+  medicine      Medicine     @relation(fields: [medicineId], references: [id])
+  medicineId    String
+  size          String
+  mrp           Float
+  saleRate      Float
+  stock         Int
   cartItems     Cart[]
   wishlistItems Wishlist[]
   myMedicines   MyMedicine[]

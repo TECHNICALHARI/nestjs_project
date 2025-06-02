@@ -51,7 +51,7 @@ export class AuthService {
     });
 
     await this.sendOtpToPhone(phone, code);
-    return 'OTP sent successfully';
+    return { data: code, message: 'OTP sent successfully' };
   }
 
   async verifyOtp(dto: VerifyOtpDto) {
@@ -91,18 +91,17 @@ export class AuthService {
           role: Role.USER,
         },
       });
-
-      const token = this.jwtService.sign({
-        sub: user.id,
-        role: user.role,
-      });
-      return {
-        message: 'Authentication successful',
-        data: {
-          token,
-          user,
-        },
-      };
     }
+    const token = this.jwtService.sign({
+      sub: user.id,
+      role: user.role,
+    });
+    return {
+      message: 'Authentication successful',
+      data: {
+        token,
+        user,
+      },
+    };
   }
 }
