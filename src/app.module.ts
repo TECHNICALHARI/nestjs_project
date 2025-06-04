@@ -14,9 +14,10 @@ import { CategoryModule } from './category/category.module';
 import { InvoiceModule } from './invoice/invoice.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SubCategoryModule } from './sub-category/sub-category.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, UserModule, MedicineModule, CartModule, WishlistModule, OrderModule, PrescriptionModule, MyMedicineModule, BrandModule, CategoryModule, InvoiceModule, SubCategoryModule],
+  imports: [PrismaModule, AuthModule, UserModule, MedicineModule, CartModule, WishlistModule, OrderModule, PrescriptionModule, MyMedicineModule, BrandModule, CategoryModule, InvoiceModule, SubCategoryModule, CloudinaryModule],
   controllers: [AppController],
   providers: [AppService],
 })

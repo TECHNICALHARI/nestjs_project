@@ -40,15 +40,15 @@ export class CreateMedicineDto {
 
   @IsNotEmpty()
   @IsUUID()
+  brandId: string;
+
+  @IsNotEmpty()
+  @IsUUID()
   categoryId: string;
 
   @IsNotEmpty()
   @IsUUID()
   subcategoryId: string;
-
-  @IsNotEmpty()
-  @IsUUID()
-  brandId: string;
 
   @IsNotEmpty()
   @IsUrl()
@@ -70,4 +70,10 @@ export class CreateMedicineDto {
   @ValidateNested({ each: true })
   @Type(() => MedicineAttributeDto)
   attributes: MedicineAttributeDto[];
+}
+
+export class UpdateMedicineDto extends CreateMedicineDto {
+  @IsOptional()
+  @IsString()
+  id?: string;
 }

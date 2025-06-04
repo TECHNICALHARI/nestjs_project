@@ -73,13 +73,13 @@ model Brand {
 model Medicine {
   id            String              @id @default(uuid())
   name          String
-  description   String
-  brand         Brand               @relation(fields: [brandId], references: [id])
+  description   String?
   brandId       String
-  category      Category            @relation(fields: [categoryId], references: [id])
+  brand         Brand               @relation(fields: [brandId], references: [id])
   categoryId    String
-  subcategory   Subcategory         @relation(fields: [subcategoryId], references: [id])
+  category      Category            @relation(fields: [categoryId], references: [id])
   subcategoryId String
+  subcategory   Subcategory         @relation(fields: [subcategoryId], references: [id])
   thumbnail     String
   images        String[]
   isTopProduct  Boolean             @default(false)
@@ -88,17 +88,18 @@ model Medicine {
 }
 
 model MedicineAttribute {
-  id            String       @id @default(uuid())
-  medicine      Medicine     @relation(fields: [medicineId], references: [id])
-  medicineId    String
-  size          String
-  mrp           Float
-  saleRate      Float
-  stock         Int
-  cartItems     Cart[]
-  wishlistItems Wishlist[]
-  myMedicines   MyMedicine[]
-  orderItems    OrderItem[]
+  id         String       @id @default(uuid())
+  medicineId String
+  medicine   Medicine     @relation(fields: [medicineId], references: [id])
+  size       String
+  mrp        Float
+  saleRate   Float
+  stock      Int
+  createdAt  DateTime     @default(now())
+  Cart       Cart[]
+  Wishlist   Wishlist[]
+  MyMedicine MyMedicine[]
+  OrderItem  OrderItem[]
 }
 
 model Cart {
